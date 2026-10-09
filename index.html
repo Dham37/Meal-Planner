@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2f7d4f">
+<title>Meal Planner Hemat</title>
+<style>
+:root{--bg:#f6f7f4;--cd:#fff;--tx:#1d2a22;--mu:#6b7a70;--ac:#2f7d4f;--a2:#e8f3ec;--bd:#dfe5e0;--wa:#c0392b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121815;--cd:#1b2420;--tx:#e8efe9;--mu:#93a69a;--ac:#5fbf86;--a2:#22332a;--bd:#2c3a33;--wa:#ff7b6b}}
+:root[data-theme="dark"]{--bg:#121815;--cd:#1b2420;--tx:#e8efe9;--mu:#93a69a;--ac:#5fbf86;--a2:#22332a;--bd:#2c3a33;--wa:#ff7b6b}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,Roboto,sans-serif;padding-bottom:76px}
+header{padding:16px 16px 4px}h1{margin:0;font-size:20px}header p{margin:2px 0 0;color:var(--mu);font-size:13px}
+section{padding:8px 16px}
+.cd{background:var(--cd);border:1px solid var(--bd);border-radius:14px;padding:14px;margin:10px 0}
+.big{font-size:30px;font-weight:700;color:var(--ac)}.big.neg{color:var(--wa)}
+.mu{color:var(--mu);font-size:13px}
+.bar{height:10px;background:var(--a2);border-radius:6px;overflow:hidden;margin:8px 0}.bar i{display:block;height:100%;background:var(--ac)}.bar i.neg{background:var(--wa)}
+input{width:100%;padding:10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit}
+.row{display:flex;gap:8px;margin-top:8px}.row input:first-child{flex:2}.row input+input{flex:1}
+button.p{background:var(--ac);color:var(--bg);border:0;border-radius:10px;padding:10px 14px;font:inherit;font-weight:600}
+.x{background:none;border:0;color:var(--wa);font-size:18px}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{padding:8px 6px;border-bottom:1px solid var(--bd);text-align:left;vertical-align:top}
+select{width:100%;margin-top:4px;padding:10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit}
+.cd.now{border-color:var(--ac);background:var(--a2)}.pp{padding:8px 0;border-top:1px solid var(--bd)}.rf{padding-left:18px;margin:6px 0}.rf li{margin:4px 0}.rf a{color:var(--ac)}.li2{padding:5px 0;border-top:1px solid var(--bd)}.li2:first-of-type{margin-top:6px}
+.th{width:34px;height:34px;object-fit:cover;border-radius:8px;vertical-align:middle;margin-right:6px}.ph{width:100%;max-height:220px;object-fit:cover;border-radius:12px;margin-top:8px}
+a.bt{text-decoration:none}.bt{display:inline-block;margin-top:6px;padding:8px 12px;border:1px solid var(--bd);border-radius:10px;color:var(--ac);font-weight:600}
+details{border-bottom:1px solid var(--bd);padding:8px 0}summary{font-weight:600}details p{margin:6px 0 2px;color:var(--mu)}
+label.it{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd)}label.it input{width:20px;height:20px}label.it span{flex:1}
+.li{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd)}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--cd);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;background:none;border:0;padding:10px 2px;color:var(--mu);font:12px system-ui,sans-serif}nav button b{display:block;font-size:20px}nav button.on{color:var(--ac);font-weight:700}
+</style></head><body>
+<header><h1>🍳 Meal Planner Hemat</h1><p>Menu & belanja ikut budget dan pola makan lo</p></header>
+<main><section id="s0"></section><section id="s1" hidden></section><section id="s2" hidden></section><section id="s3" hidden></section><section id="s4" hidden></section><section id="s5" hidden></section></main>
+<nav><button onclick="go(0)"><b>📊</b>Beranda</button><button onclick="go(1)"><b>📅</b>Menu</button><button onclick="go(2)"><b>📖</b>Resep</button><button onclick="go(3)"><b>🛒</b>Belanja</button><button onclick="go(4)"><b>🧾</b>Catatan</button><button onclick="go(5)"><b>🏃</b>Olahraga</button></nav>
+<script>
+const $=s=>document.querySelector(s);
+let S={budget:850000,exp:[],chk:{},mk:2,ms:2,af:1.55,p:[{n:"Idham",j:"m",bb:60,tb:172,u:36,g:400},{n:"Syrly",j:"f",bb:65,tb:165,u:27,g:-400}]},tab=0,op={},I={};
+try{Object.assign(S,JSON.parse(localStorage.getItem('mp')||'{}'))}catch(e){}
+if(!Array.isArray(S.p)||S.p.length<2||S.p.some(x=>!x))S.p=[{n:"Idham",j:"m",bb:60,tb:172,u:36,g:400},{n:"Syrly",j:"f",bb:65,tb:165,u:27,g:-400}];
+S.exp=(Array.isArray(S.exp)?S.exp:[]).filter(e=>e&&typeof e.d=='string'&&Number.isFinite(e.a));if(!S.chk||typeof S.chk!='object')S.chk={};S.budget=Math.max(0,+S.budget||0);S.mk=Math.min(4,Math.max(1,S.mk|0||2));S.ms=Math.min(S.mk,Math.max(1,S.ms|0||S.mk));
+S.p.forEach(x=>{if(x.n=='Lo')x.n='Idham';if(x.n=='Istri')x.n='Syrly'});
+const AM={1.35:1.375,1.5:1.55,1.7:1.725};S.af=AM[S.af]||S.af;S.p.forEach(x=>{if(x.af)x.af=AM[x.af]||x.af});
+const save=()=>{try{localStorage.setItem('mp',JSON.stringify(S))}catch(e){}};
+const rp=n=>(n<0?'-':'')+'Rp'+Math.abs(Math.round(n)).toLocaleString('id-ID');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const D0=[["Senin","Nasi, telur dadar, tumis kangkung","Nasi, tempe goreng, sayur bening"],["Selasa","Nasi, ayam goreng bumbu kuning","Nasi, ayam suwir + tumis buncis"],["Rabu","Nasi, tahu tempe orek","Nasi, telur balado, lalapan"],["Kamis","Nasi, sayur sop + ayam","Nasi, sisa sop + tempe goreng"],["Jumat","Nasi, telur ceplok, capcay","Nasi, tahu bumbu kecap"],["Sabtu","Nasi goreng + telur","Nasi, ayam rica sederhana"],["Minggu","Bihun goreng sayur + telur","Nasi, sisa lauk + sayur"]];
+const R0=[
+["Ayam goreng bumbu kuning","Haluskan 4 bawang putih, 4 bawang merah, 2 cm kunyit, 1 cm jahe, 1 sdt ketumbar, garam. Tumis dengan daun salam, masukkan ½ kg ayam + 300 ml air, masak api kecil ±25 menit sampai menyusut, goreng sebentar. Sisakan untuk disuwir."],
+["Ayam suwir tumis buncis","Tumis 2 bawang putih, 2 bawang merah, 1-2 cabai. Masukkan buncis 3-4 menit, tambah ayam suwir, garam, sedikit gula, 1 sdm kecap."],
+["Ayam rica sederhana","Haluskan 5 cabai rawit, 3 cabai merah, 4 bawang merah, 3 bawang putih. Tumis dengan daun salam, masukkan ayam potong kecil + air sedikit, masak ±20 menit sampai kering. Garam, gula, jeruk nipis."],
+["Telur balado","Goreng 2 telur rebus. Haluskan 4 cabai merah, 2 bawang putih, 3 bawang merah, 1 tomat kecil, tumis matang, beri garam & gula, masukkan telur."],
+["Telur dadar","Kocok 2 telur + garam + irisan daun bawang. Goreng dua sisi."],
+["Tahu bumbu kecap","Goreng tahu. Tumis 2 bawang putih, 2 bawang merah, 1 cabai, masukkan tahu, 2 sdm kecap, sedikit air, garam. Masak sampai meresap."],
+["Tahu tempe orek","Dadu kecil tahu & tempe, goreng sebentar. Tumis 3 bawang merah, 2 bawang putih, cabai, masukkan tahu tempe, 2 sdm kecap, gula, garam, 3 sdm air. Aduk sampai kering."],
+["Tempe goreng","Iris tempe, rendam sebentar di air + 1 bawang putih halus + garam + ketumbar. Goreng sampai renyah."],
+["Tumis kangkung","Tumis 3 bawang putih, 2 bawang merah, 2 cabai. Masukkan kangkung, garam, gula, sedikit air. Api besar 2-3 menit."],
+["Sayur bening","Rebus 500 ml air + 2 bawang merah iris + 1 bawang putih geprek + garam & gula. Masukkan bayam/sawi, masak 2-3 menit."],
+["Sayur sop + ayam","Rebus ayam + 2 bawang putih geprek + daun bawang + garam ±20 menit. Masukkan wortel & kentang 10 menit, terakhir kol/seledri. Tambah merica."],
+["Capcay sederhana","Tumis 3 bawang putih, masukkan sawi, wortel, kol, buncis. Tambah 2 sdm saus tiram/kecap, garam, merica, 100 ml air. Masak 3-4 menit."],
+["Nasi goreng + telur","Tumis 3 bawang merah, 2 bawang putih, cabai, orak-arik 1 telur. Masukkan nasi dingin, 1-2 sdm kecap, garam, merica. Api besar 3 menit, tambah telur ceplok."],
+["Bihun goreng sayur","Rendam bihun sampai lunak. Tumis bawang + sawi/kol + orak-arik telur, masukkan bihun, 2 sdm kecap, garam, merica."]];
+const RX=[
+["Lele goreng + sambal","Bersihkan lele, lumuri garam + kunyit + bawang putih halus, diamkan 15 menit. Goreng api sedang sampai kering. Sambal: ulek 5 cabai rawit, 2 bawang putih, 1 tomat, garam, sedikit gula.",1000000],
+["Tongkol suwir pedas","Rebus tongkol dengan daun salam & garam, suwir. Tumis 4 bawang merah, 2 bawang putih, 5 cabai merah, 1 tomat, masukkan suwiran, garam, gula, daun jeruk. Masak sampai kering.",1100000],
+["Tumis daging sapi lada hitam","Iris tipis ¼ kg daging, tumis dengan 3 bawang putih + 1 bawang bombay, 1 sdt lada hitam kasar, 2 sdm kecap, 1 sdm saus tiram, sedikit air. Masak 10 menit.",1200000],
+["Sop daging sapi","Rebus daging + bawang putih geprek ±40 menit sampai empuk. Masukkan wortel, kentang, daun bawang, seledri, garam, merica. Masak 10 menit lagi.",1300000],
+["Udang asam manis","Tumis 3 bawang putih + bawang bombay, 2 sdm saus tomat, 1 sdm saus sambal, 1 sdm gula, sedikit air, tomat. Masukkan udang, masak 3-4 menit, kentalkan dengan sedikit maizena.",1400000]];
+let D=D0,R=R0,L=[];
+const IT=[["Telur","kg",30000,0,3,.25],["Ayam","kg",38000,0,4,.25],["Tempe / tahu","bungkus",5000,0,2.5,1],["Sayur (kangkung, buncis, sawi, wortel)","ikat/porsi",5000,0,5,1],["Bumbu (bawang, cabai, dll)","",1,0,3,1000],["Ikan (lele / tongkol)","kg",35000,1000000,2.5,.25],["Buah (pisang, jeruk)","kg",22000,0,2,.25],["Daging sapi","kg",130000,1200000,3,.25],["Susu & snack sehat","",1,1500000,2,1000],["Udang / seafood","kg",90000,1400000,2,.25]];
+function genOld(B){const wk=B*.94/4-rice()*S.pr.beras,act=IT.filter(x=>x[3]<=B),w=act.reduce((a,x)=>a+x[4],0),u=Math.max(0,wk)/w*F2;
+ return [{n:"Beras",q:String(rice()).replace('.',',')+' kg',c:Math.round(rice()*S.pr.beras)}].concat(act.map(x=>{const a=u*x[4],p=pr(x);const q=Math.max(x[5],Math.round(a/p/x[5])*x[5]);return{n:x[0],q:p==1?'sesuai kebutuhan':String(q).replace('.',',')+' '+x[1],c:Math.round(q*p)}}))}
+function menuOld(B){const m=D0.map(d=>d.slice()),s=(i,j,v)=>{m[i][j]=v};
+ if(B>=1000000){s(1,2,"Nasi, lele goreng + sambal");s(4,2,"Nasi, tongkol suwir pedas")}
+ if(B>=1300000){s(2,1,"Nasi, tumis daging sapi lada hitam");s(3,1,"Nasi, sop daging sapi")}
+ if(B>=2000000){s(5,2,"Nasi, udang asam manis")}
+ return m}
+try{I=JSON.parse(localStorage.getItem('mpi')||'{}')}catch(e){}
+const DN=["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"],LB={1:["Makan"],2:["Siang","Malam"],3:["Pagi","Siang","Malam"],4:["Pagi","Siang","Sore","Malam"]};
+const LK=[["telur dadar",0],["tempe goreng",0],["tahu bumbu kecap",0],["ayam goreng bumbu kuning",0],["telur ceplok",5e5],["tahu tempe orek",6e5],["telur balado",7e5],["ayam suwir tumis",8e5],["ayam rica sederhana",9e5],["lele goreng + sambal",1e6],["tongkol suwir pedas",1.1e6],["tumis daging sapi lada hitam",1.2e6],["sop daging sapi",1.3e6],["udang asam manis",1.4e6]];
+const SY=["tumis kangkung","sayur bening","tumis buncis","capcay","lalapan","tumis sawi","sayur sop"];
+function menu2(){const lv=Math.max(0,Math.floor(S.budget/1e5)),F=LK.filter(x=>x[1]<=lv*1e5).map(x=>x[0]),n=S.mk,c=S.ms;let ci=0,prev='';const gc=a=>{let x=a,y=F.length;while(y)[x,y]=[y,x%y];return x==1},st=[3,5,7,9,11,13,1].find(gc);
+ return DN.map((nm,d)=>[nm,Array.from({length:n},(_,m)=>{const cook=Math.floor(m*c/n)!=Math.floor((m-1)*c/n);
+  if(!cook)return{t:'Sisa: '+prev,c:0};
+  const i=((ci++)+lv)*st%F.length;
+  const t='Nasi, '+F[i]+(/sop/.test(F[i])?'':', '+SY[(ci*2+lv)%SY.length]);prev=t.slice(6);return{t,c:1}})])}
+function setM(v){S.mk=v;if(S.ms>v)S.ms=v;save();r()}
+function em(n){return/ayam/i.test(n)?'🍗':/telur/i.test(n)?'🥚':/lele|tongkol/i.test(n)?'🐟':/daging|sapi/i.test(n)?'🥩':/udang/i.test(n)?'🦐':/bihun|mie/i.test(n)?'🍜':/nasi/i.test(n)?'🍚':/tahu|tempe/i.test(n)?'🫘':'🥬'}
+function saveI(){try{localStorage.setItem('mpi',JSON.stringify(I))}catch(e){alert('Penyimpanan penuh, foto belum tersimpan permanen.')}}
+function pic(i,el){const f=el.files[0];if(!f)return;const n=R[i][0],rd=new FileReader();rd.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,480/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=im.width*k;c.height=im.height*k;c.getContext('2d').drawImage(im,0,0,c.width,c.height);I[n]=c.toDataURL('image/jpeg',.7);saveI();r()};im.src=rd.result};rd.readAsDataURL(f)}
+function rmI(i){delete I[R[i][0]];saveI();r()}
+function P(){return S.p.map(x=>{const b=10*x.bb+6.25*x.tb-5*x.u+(x.j=='m'?5:-161),td=b*(x.af||S.af),mn=x.j=='m'?1500:1200,t=Math.max(mn,Math.round((td+x.g)/50)*50),sn=x.g>0?300:x.g<0?100:200,mm=(t-sn)/S.mk;return{...x,t,sn,mm:Math.round(mm),...porsi(x,mm),pr:Math.round(x.bb*(x.g>0?1.5:1.3)),low:td+x.g<mn}})}
+function rice(){const p=P();return Math.max(1.5,Math.round(7*S.mk*(p[0].nasi+p[1].nasi)/2500*2)/2)}
+const ed=(i,k,l)=>`<label class="mu" style="flex:1">${l}<input type="number" inputmode="decimal" value="${S.p[i][k]}" onchange="S.p[${i}].${k}=+this.value||0;save();r()"></label>`;
+function porsi(x,mm){const pr=x.bb*(x.g>0?1.5:1.3)/S.mk,tl=x.g>0?2:1,tp=x.g>0?2:1,ay=Math.max(.5,Math.round((pr-tl*6-tp*5)/20*2)/2),lk=ay*170+tl*85+tp*70;return{ay,tl,tp,lk,nasi:Math.max(50,Math.round((mm-lk-100)/1.3/10)*10)}}
+const AFO=[[1.2,'Sangat ringan (duduk terus)'],[1.375,'Ringan (kantor / duduk)'],[1.55,'Sedang (aktif / lapangan)'],[1.725,'Berat (fisik / olahraga)'],[1.9,'Sangat berat (fisik + olahraga)']];
+const AK=[['m',19,29,2650,65],['m',30,49,2550,65],['f',19,29,2250,60],['f',30,49,2150,0],['m',50,64,2150,0],['f',50,64,1800,0]];
+function akg(x){const a=AK.find(r=>r[0]==x.j&&x.u>=r[1]&&x.u<=r[2]);return a?'📋 AKG Kemenkes usia '+a[1]+'-'+a[2]+': '+a[3]+' kkal'+(a[4]?' · protein '+a[4]+' g':''):''}
+const PDATE='9 Okt 2026',PD={beras:16300,telur:29200,ayam:41050,tempe:5000,sayur:5000,ikan:37000,buah:16000,sapi:153400,udang:90000};
+const PISO='2026-10-09';S.pr={...PD,...(S.pr||{})};if(!S.prv)S.prv=PDATE;if(S.prv!=PDATE){S.pr={...PD};S.prv=PDATE}
+function cp(){const t='update harga pangan terbaru di Meal Planner Hemat';try{navigator.clipboard.writeText(t).then(()=>alert('Pesan disalin. Tempel di chat Claude.'),()=>alert(t))}catch(e){alert(t)}}
+const PL=[['beras','Beras medium I (Rp/kg)','PIHPS nasional, 7 Okt'],['telur','Telur ayam ras (Rp/kg)','PIHPS nasional, 9 Okt'],['ayam','Daging ayam ras (Rp/kg)','PIHPS nasional, 9 Okt'],['sapi','Daging sapi (Rp/kg)','data PIHPS via media, 9 Okt'],['ikan','Ikan tongkol/lele (Rp/kg)','acuan harga Bali, 9 Okt'],['buah','Pisang/jeruk (Rp/kg)','acuan harga Bali, 9 Okt'],['tempe','Tempe/tahu (Rp/bungkus)','perkiraan'],['sayur','Sayur (Rp/ikat)','perkiraan'],['udang','Udang/seafood (Rp/kg)','perkiraan']];
+const PK=['telur','ayam','tempe','sayur',0,'ikan','buah','sapi',0,'udang'];
+const pr=x=>{const k=PK[IT.indexOf(x)];return k&&S.pr[k]>0?S.pr[k]:x[2]};
+const EA={K:['Latihan kekuatan',3.5,'🏋️'],J:['Jalan cepat',4.3,'🚶'],R:['Jogging ringan',7,'🏃'],B:['Bersepeda santai',4,'🚴'],I:['Istirahat',0,'😴']};
+const EP={up:[['K',45],['J',30],['K',45],['J',30],['K',45],['B',60],['J',30]],down:[['K',40],['J',45],['K',40],['J',45],['J',30],['R',45],['I',0]],keep:[['K',40],['J',30],['J',30],['K',40],['J',30],['B',60],['I',0]]};
+function exr(q){const f=q.lv?1:.75;return EP[q.g>0?'up':q.g<0?'down':'keep'].map((d,k)=>{const a=EA[d[0]],m=d[0]=='I'?0:Math.round(d[1]*f/5)*5;return{h:DN[k],t:d[0],a,m,kc:Math.round(a[1]*q.bb*m/60)}})}
+let F2=1;
+function gen(B){F2=1;let l=genOld(B);const lim=B*.94/4,sm=a=>a.reduce((s,x)=>s+x.c,0);for(let k=0;k<40&&sm(l)>lim;k++){F2*=.96;l=genOld(B)}F2=1;return l}
+const SH_OLD=[["Beras ±1,5 kg",22000],["Telur 1 kg",30000],["Ayam 1 kg",38000],["Tempe / tahu",25000],["Sayur (kangkung, buncis, sawi, wortel)",40000],["Bumbu (bawang, cabai, dll)",30000]];
+function go(i){tab=i;r()}
+function addE(item,amt){if(!(amt>0))return;S.exp.push({d:ymd(new Date()),i:item||'Belanja',a:amt});save();r()}
+function del(k){S.exp.splice(k,1);save();r()}
+function tg(i){const k=L[i].n;S.chk[k]=!S.chk[k];save();r()}
+function r(){
+ const B=Math.max(100000,Math.floor(S.budget/50000)*50000);D=menu2();R=R0.concat(RX).filter(x=>(x[2]||0)<=B);L=gen(B);const pp=P();const nx=LK.map(x=>x[1]).filter(v=>v>B).sort((a,b)=>a-b)[0];
+ const t=new Date(),mk=ymd(t).slice(0,7),dim=new Date(t.getFullYear(),t.getMonth()+1,0).getDate();
+ const spent=S.exp.filter(e=>e.d.startsWith(mk)).reduce((a,e)=>a+e.a,0),sisa=S.budget-spent,left=dim-t.getDate()+1;
+ const pct=S.budget>0?Math.min(100,spent/S.budget*100):0,ti=(t.getDay()+6)%7;
+ for(let i=0;i<6;i++)$('#s'+i).hidden=i!=tab;
+ document.querySelectorAll('nav button').forEach((b,i)=>b.classList.toggle('on',i==tab));
+ $('#s0').innerHTML=`<div class="cd"><div class="mu">Budget bulan ini (berdua)</div><input type="number" inputmode="numeric" step="50000" value="${S.budget}" onchange="S.budget=Math.max(0,+this.value||0);save();r()"></div>
+ <div class="cd"><div class="mu">Pola makan</div><div class="row"><label class="mu" style="flex:1">Makan/hari<select onchange="setM(+this.value)">${[1,2,3,4].map(v=>`<option ${v==S.mk?'selected':''}>${v}</option>`).join('')}</select></label><label class="mu" style="flex:1">Masak/hari<select onchange="S.ms=+this.value;save();r()">${Array.from({length:S.mk},(_,v)=>`<option ${v+1==S.ms?'selected':''}>${v+1}</option>`).join('')}</select></label></div></div><div class="cd"><div class="mu">Target gizi (estimasi, bukan saran medis)</div>${pp.map((q,i)=>`<div class="pp"><b>${q.n}</b> <select onchange="S.p[${i}].g=+this.value;save();r()">${[[400,'⬆️ Naik BB'],[0,'➡️ Jaga BB'],[-400,'⬇️ Turun BB']].map(a=>`<option value="${a[0]}" ${(q.g>0?400:q.g<0?-400:0)==a[0]?'selected':''}>${a[1]}</option>`).join('')}</select><select onchange="S.p[${i}].af=+this.value;save();r()">${AFO.map(a=>`<option value="${a[0]}" ${a[0]==(q.af||S.af)?'selected':''}>${a[1]}</option>`).join('')}</select><div class="row">${ed(i,'bb','BB kg')}${ed(i,'tb','TB cm')}${ed(i,'u','Usia')}${ed(i,'g','± kkal')}</div><div>🔥 <b>${q.t}</b> kkal/hari · 🥩 protein ±${q.pr} g</div><div class="mu">Per makan ±${q.mm} kkal · nasi ±${q.nasi} g (±${Math.round(q.nasi/100)} centong) · snack/buah +${q.sn} kkal</div><div class="mu">${akg(q)}</div>${q.mm>850?'<div class="mu">⚠️ Per makan cukup besar, coba naikkan Makan/hari jadi 3-4.</div>':''}${q.low?'<div class="mu">⚠️ Target dinaikkan ke batas minimum aman.</div>':''}</div>`).join('')}</div><div class="cd"><details ${op.ref?'open':''} ontoggle="op.ref=this.open"><summary>📚 Referensi target gizi</summary><p class="mu"><b>Cara hitung:</b> kalori basal pakai rumus Mifflin-St Jeor, dikali faktor aktivitas 1,2-1,9, lalu ± selisih kkal sesuai tujuan. Protein 1,5 g/kg (naik BB) atau 1,3 g/kg (jaga/turun BB).</p><ul class="rf"><li><a href="https://regulasi.bkpk.kemkes.go.id/detail/bbfd26ce-c56d-40e1-9071-7c64f9be4ea0/unduh" target="_blank" rel="noopener">PMK No. 28/2019 - Angka Kecukupan Gizi (Kemenkes)</a></li><li><a href="https://www.bloombergtechnoz.com/detail-news/117481/pola-konsumsi-whey-protein-semakin-populer-ini-kata-ahli-gizi/2" target="_blank" rel="noopener">Contoh nilai AKG kalori &amp; protein dewasa (Bloomberg Technoz)</a></li><li><a href="https://www.qxmd.com/r/2305711" target="_blank" rel="noopener">Mifflin MD dkk. 1990, Am J Clin Nutr 51:241-247</a></li><li><a href="https://pubmed.ncbi.nlm.nih.gov/28642676/" target="_blank" rel="noopener">ISSN Position Stand: protein &amp; olahraga (2017)</a></li><li><a href="https://hellosehat.com/community/nutrisi/kalori-basal/" target="_blank" rel="noopener">HelloSehat: defisit kalori aman (±20-25% / ±500 kkal)</a></li></ul><p class="mu">AKG = rata-rata kecukupan populasi untuk berat badan acuan, bukan target pribadi. Angka ISSN berlaku untuk orang yang rutin olahraga. Semua hasil di app hanya estimasi, bukan saran medis.</p></details></div><div class="cd"><div class="mu">Sisa budget</div><div class="big ${sisa<0?'neg':''}">${rp(sisa)}</div><div class="bar"><i class="${sisa<0?'neg':''}" style="width:${pct}%"></i></div>
+ <div class="mu">Terpakai ${rp(spent)} dari ${rp(S.budget)}</div><div class="mu">Jatah per hari (${left} hari lagi): <b>${rp(Math.max(0,sisa)/left)}</b> · per makan <b>${rp(Math.max(0,sisa)/left/S.mk)}</b></div></div>
+ <div class="cd"><div class="mu">Menu hari ini · ${D[ti][0]}</div>${D[ti][1].map((x,m)=>`<p><b>${LB[S.mk][m]}:</b> ${x.c?'🔥':'♻️'} ${x.t}</p>`).join('')}</div>`;
+ $('#s1').innerHTML=`<div class="cd"><div class="mu">Porsi per makan · 1 centong nasi ≈ 100 g, 1 potong ayam ≈ 80 g, 1 potong tempe ≈ 25 g, 1 potong tahu ≈ 40 g</div>${pp.map(q=>`<div class="li2"><b>${q.n}</b> ${q.g>0?'⬆️ naik BB':q.g<0?'⬇️ turun BB':'➡️ jaga BB'}<br>🍚 Nasi ±${q.nasi} g (±${Math.round(q.nasi/100)} centong)<br>🍗 Ayam/ikan/daging ±${q.ay} potong (±${q.ay*80} g)<br>🥚 Telur ${q.tl} butir<br>🫘 Tempe/tahu ${q.tp} potong<br>🥬 Sayur ±100 g (1 mangkuk kecil)<br><span class="mu">Snack: ${q.g>0?'pisang + susu / roti selai kacang':q.g<0?'buah / camilan ringan':'buah'} (+${q.sn} kkal)${q.g<0?' · masak ditumis/direbus, kurangi gorengan & santan':q.g>0?' · gorengan & santan boleh, bantu kalori':''}</span></div>`).join('')}</div>${D.map((d,i)=>`<div class="cd ${i==ti?'now':''}"><b>${d[0]}</b>${d[1].map((x,m)=>`<div class="li2"><span class="mu">${LB[S.mk][m]}</span> ${x.c?'🔥':'♻️'} ${x.t}</div>`).join('')}</div>`).join('')}<p class="mu">🔥 = masak, ♻️ = makan sisa. Tips: masak batch & simpan di kulkas.${B>=1500000?' Susu & snack sehat masuk daftar belanja.':''}</p>`;
+ $('#s2').innerHTML=`<p class="mu">Ketuk 🔎 untuk lihat foto referensi di web, simpan fotonya, lalu pasang lewat 📷.</p><div class="cd">${R.map((x,i)=>{const im=I[x[0]];return`<details ${op[i]?'open':''} ontoggle="op[${i}]=this.open"><summary>${im?`<img class="th" src="${im}" alt="">`:em(x[0])+' '}${x[0]}</summary>${im?`<img class="ph" src="${im}" alt="${x[0]}">`:''}<p>${x[1]}</p><label class="bt">📷 ${im?'Ganti':'Tambah'} foto<input type="file" accept="image/*" hidden onchange="pic(${i},this)"></label> <a class="bt" href="https://www.google.com/search?tbm=isch&amp;q=${encodeURIComponent('resep '+x[0])}" target="_blank" rel="noopener">🔎 Foto referensi</a>${im?` <button class="x" onclick="rmI(${i})" aria-label="Hapus foto">✕</button>`:''}</details>`}).join('')}</div>${nx?`<p class="mu">🔒 Naik ke ${rp(nx)} buat buka menu & resep baru.</p>`:''}`;
+ const tot=L.reduce((a,x)=>a+x.c,0),ck=L.filter(x=>S.chk[x.n]).reduce((a,x)=>a+x.c,0);
+ $('#s3').innerHTML=`<div class="cd"><div class="mu">Belanja mingguan · daftar untuk budget ${rp(B)}</div>${L.map((x,i)=>`<label class="it"><input type="checkbox" ${S.chk[x.n]?'checked':''} onchange="tg(${i})"><span>${x.n}<br><span class="mu">${x.q}</span></span><span class="mu">${rp(x.c)}</span></label>`).join('')}
+ ${tot*4+Math.round(B*.06/1000)*1000>B*1.03?'<p class="mu" style="color:var(--wa)">⚠️ Budget terlalu kecil untuk porsi dan target gizi ini, belanja minimal sudah melewati budget.</p>':''}<p><b>Total estimasi ${rp(tot)}</b><br><span class="mu">+ stok dapur bulanan (minyak, gula, kecap, garam) ±${rp(Math.round(B*.06/1000)*1000)}</span><br><span class="mu">Dicentang: ${rp(ck)}</span></p>
+ <button class="p" onclick="addE('Belanja mingguan',${ck});S.chk={};save();r()">Catat yang dicentang ke pengeluaran</button></div><div class="cd"><details ${op.pr?'open':''} ontoggle="op.pr=this.open"><summary>💲 Harga acuan (bisa diedit)</summary>${Math.floor((Date.now()-new Date(PISO))/864e5)>7?'<p class="mu" style="color:var(--wa)">⚠️ Harga sudah lebih dari seminggu, kemungkinan sudah berubah. Cek ulang atau minta Claude update.</p>':''}<p class="mu">Snapshot ${PDATE}, rata-rata pasar tradisional (PIHPS Bank Indonesia). Ubah sesuai harga di tempat lo belanja, daftar belanja langsung menyesuaikan.</p>${PL.map(a=>`<label class="mu" style="display:block;margin-top:8px">${a[1]} · <i>${a[2]}</i><input type="number" inputmode="numeric" value="${S.pr[a[0]]}" onchange="S.pr.${a[0]}=+this.value>0?+this.value:PD.${a[0]};save();r()"></label>`).join('')}<p><button class="p" onclick="S.pr={...PD};save();r()">Kembalikan ke harga acuan</button></p><p class="mu">Harga berubah tiap hari. Cek terbaru di <a href="https://www.bi.go.id/hargapangan" target="_blank" rel="noopener" style="color:var(--ac)">PIHPS Bank Indonesia</a>, lalu masukkan di atas.</p><p><button class="p" onclick="cp()">📋 Salin pesan "update harga" untuk Claude</button></p></details></div>`;
+ const list=S.exp.map((e,k)=>[e,k]).reverse();
+ $('#s4').innerHTML=`<div class="cd"><div class="mu">Tambah pengeluaran</div><div class="row"><input id="ei" placeholder="Item (mis. Beras)"><input id="ea" type="number" inputmode="numeric" placeholder="Rp"></div><div class="row"><button class="p" onclick="addE($('#ei').value.trim(),+$('#ea').value)">Simpan</button></div></div>
+ <div class="cd">${list.length?list.map(([e,k])=>`<div class="li"><div>${esc(e.i)}<div class="mu">${e.d}</div></div><div>${rp(e.a)} <button class="x" onclick="del(${k})" aria-label="Hapus">✕</button></div></div>`).join(''):'<span class="mu">Belum ada catatan.</span>'}</div>`;
+ $('#s5').innerHTML=`<div class="cd"><div class="mu">Menu olahraga mingguan · estimasi kalori pakai nilai MET, bukan saran medis</div></div>`+pp.map((q,i)=>{const rw=exr(q),ae=rw.filter(x=>'JRB'.includes(x.t)).reduce((s,x)=>s+x.m,0),kd=rw.filter(x=>x.t=='K').length,kc=rw.reduce((s,x)=>s+x.kc,0);return`<div class="cd"><b>${q.n}</b> <select onchange="S.p[${i}].g=+this.value;save();r()">${[[400,'⬆️ Naik BB'],[0,'➡️ Jaga BB'],[-400,'⬇️ Turun BB']].map(a=>`<option value="${a[0]}" ${(q.g>0?400:q.g<0?-400:0)==a[0]?'selected':''}>${a[1]}</option>`).join('')}</select><select onchange="S.p[${i}].lv=+this.value;save();r()"><option value="0" ${q.lv?'':'selected'}>Pemula (durasi ×0,75)</option><option value="1" ${q.lv?'selected':''}>Menengah</option></select>${rw.map(x=>`<div class="li2"><span class="mu">${x.h}</span> ${x.a[2]} ${x.a[0]}${x.m?` · ${x.m} mnt · ±${x.kc} kkal`:''}</div>`).join('')}<p class="mu">Aerobik ${ae} mnt/minggu ${ae>=150?'✅':'⚠️ (anjuran WHO 150-300 mnt, naikkan bertahap)'} · Kekuatan ${kd} hari ${kd>=2?'✅':'⚠️'} (anjuran minimal 2 hari) · total ±${kc} kkal/minggu</p></div>`}).join('')+`<div class="cd"><details ${op.ex?'open':''} ontoggle="op.ex=this.open"><summary>💡 Tips &amp; referensi olahraga</summary><p class="mu"><b>Latihan kekuatan:</b> pilih 5-6 gerakan besar (squat, push-up, dayung pakai dumbbell/botol air, lunge, plank), 2-3 set × 8-15 repetisi, istirahat 60-90 detik. Naik BB: tambah beban atau repetisi tiap 1-2 minggu dan makan sesuai target kalori. Turun BB: tetap latihan kekuatan supaya otot terjaga. Jalan cepat = napas lebih cepat tapi masih bisa ngobrol. Jogging boleh diselingi jalan.</p><p class="mu"><b>Aman:</b> pemanasan dan pendinginan 5 menit. Berhenti kalau nyeri dada, pusing, atau sesak tidak wajar. Punya kondisi kesehatan? Konsultasi dokter dulu. Faktor aktivitas di Beranda sudah mengasumsikan rutinitas olahraga, jadi kalori di sini jangan ditambahkan lagi ke porsi makan.</p><ul class="rf"><li><a href="https://www.ncbi.nlm.nih.gov/books/NBK566048/" target="_blank" rel="noopener">WHO Guidelines on Physical Activity and Sedentary Behaviour (2020)</a></li><li><a href="https://pacompendium.com/wp-content/uploads/2024/02/1_2024-adult-compendium_1_2024.pdf" target="_blank" rel="noopener">2024 Adult Compendium of Physical Activities (nilai MET)</a></li><li><a href="https://pubmed.ncbi.nlm.nih.gov/28642676/" target="_blank" rel="noopener">ISSN Position Stand: protein &amp; olahraga (2017)</a></li></ul><p class="mu">Kalori = MET × berat badan × jam. Nilai MET dipakai: latihan beban 3,5; jalan cepat 4,3; bersepeda santai 4,0; jogging 7,0. Angka rata-rata, hasil aslinya bisa beda.</p></details></div>`;
+}
+r();
+</script></body></html>
